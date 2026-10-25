@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Haru-haru</title>
+  <meta name="description" content="Daily tasks, one day at a time.">
+  <meta name="theme-color" content="#f6f4ef" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#141614" media="(prefers-color-scheme: dark)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Haru-haru">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app">
+    <header class="top">
+      <div>
+        <p class="eyebrow" id="weekday"></p>
+        <h1 id="date"></h1>
+      </div>
+      <button class="ring" id="ring" aria-label="Progress" type="button">
+        <svg viewBox="0 0 44 44" aria-hidden="true">
+          <circle class="ring-track" cx="22" cy="22" r="18"/>
+          <circle class="ring-fill" id="ring-fill" cx="22" cy="22" r="18"/>
+        </svg>
+        <span id="ring-label">0/0</span>
+      </button>
+    </header>
+
+    <section class="week" id="week" aria-label="Last 7 days"></section>
+
+    <section class="list-section">
+      <div class="section-head">
+        <h2>Every day</h2>
+        <span class="hint" id="daily-count"></span>
+      </div>
+      <ul class="tasks" id="daily-list"></ul>
+      <p class="empty" id="daily-empty">Add habits you want to do every day. They reset at midnight.</p>
+    </section>
+
+    <section class="list-section">
+      <div class="section-head">
+        <h2>Today</h2>
+        <span class="hint" id="once-count"></span>
+      </div>
+      <ul class="tasks" id="once-list"></ul>
+      <p class="empty" id="once-empty">One-off tasks for today. Unfinished ones carry over to tomorrow.</p>
+    </section>
+
+    <footer class="foot">
+      <button type="button" class="link" id="edit-toggle">Edit</button>
+      <span aria-hidden="true">·</span>
+      <button type="button" class="link" id="export">Export</button>
+      <span aria-hidden="true">·</span>
+      <button type="button" class="link" id="import">Import</button>
+      <input type="file" id="import-file" accept="application/json" hidden>
+    </footer>
+  </main>
+
+  <form class="composer" id="composer" autocomplete="off">
+    <div class="kind" role="radiogroup" aria-label="Task type">
+      <label><input type="radio" name="kind" value="once" checked><span>Today</span></label>
+      <label><input type="radio" name="kind" value="daily"><span>Every day</span></label>
+    </div>
+    <div class="row">
+      <input id="new-title" name="title" type="text" placeholder="Add a task…" maxlength="120" enterkeyhint="done" aria-label="New task">
+      <button type="submit" class="add" aria-label="Add task">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+    </div>
+  </form>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
