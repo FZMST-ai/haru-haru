@@ -25,7 +25,37 @@ Shortcut URLs (handy for iOS Shortcuts or widgets): `…/haru-haru/?add=once` an
 
 > Note: on iOS, the home-screen app keeps its own storage separate from Safari, so add your tasks after installing.
 
-## Run locally
+## iOS app (SwiftUI)
+
+There's also a native iPhone app in [`ios/`](ios). It works like the web app and adds:
+
+- **Reminders** for any task (swipe right → Edit → *Remind me*). Habit reminders are skipped on days you've already done them, and each one has a **Mark done** button.
+- **Evening check-in** (Settings) that lists what's left. It's skipped on days you finish everything.
+- Backups use the same JSON format as the web app, so you can **Export** from one and **Import** into the other.
+
+### Install with SideStore (free Apple ID)
+
+Every push that changes `ios/` builds an unsigned `.ipa` on GitHub Actions and publishes it here:
+
+**https://github.com/FZMST-ai/haru-haru/releases/download/ios-latest/HaruHaru.ipa**
+
+1. Set up SideStore once by following the official guide at <https://docs.sidestore.io>. You'll need a computer for this one time, plus your Apple ID.
+2. On your iPhone, open the link above in Safari and download `HaruHaru.ipa`.
+3. In SideStore, go to **My Apps → +** and pick the downloaded file. SideStore signs it with your Apple ID.
+4. Open Haru-haru and allow notifications when it asks (this happens when you turn on a reminder).
+
+A free Apple ID's signature lasts 7 days. Open SideStore and tap **Refresh All** every few days, or automate it with a Shortcuts "When app is opened" or time-of-day automation. Your tasks are kept even if it lapses.
+
+To update the app, download the new `.ipa` and install it again the same way. Your data stays.
+
+### Build it yourself (Mac)
+
+```sh
+brew install xcodegen
+cd ios && xcodegen generate && open HaruHaru.xcodeproj
+```
+
+## Run the web app locally
 
 ```sh
 python3 -m http.server 8000
