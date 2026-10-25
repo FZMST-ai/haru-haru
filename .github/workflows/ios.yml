@@ -1,0 +1,67 @@
+name: Build iOS app
+
+on:
+  push:
+    paths:
+      - "ios/**"
+      - ".github/workflows/ios.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ios-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate Xcode project
+        working-directory: ios
+        run: |
+          brew install xcodegen
+          xcodegen generate
+
+      - name: Build unsigned app
+        working-directory: ios
+        run: |
+          xcodebuild -version
+          xcodebuild build \
+            -project HaruHaru.xcodeproj \
+            -scheme HaruHaru \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            CURRENT_PROJECT_VERSION=${{ github.run_number }} \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY=""
+
+      # SideStore re-signs the app with your own Apple ID, so an unsigned .ipa is all it needs.
+      - name: Package .ipa
+        working-directory: ios
+        run: |
+          mkdir -p Payload
+          cp -R build/Build/Products/Release-iphoneos/HaruHaru.app Payload/
+          zip -qry HaruHaru.ipa Payload
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HaruHaru-ipa
+          path: ios/HaruHaru.ipa
+
+      # Publish to a fixed release so the download link never changes.
+      - name: Publish to "ios-latest" release
+        if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view ios-latest >/dev/null 2>&1 || \
+            gh release create ios-latest --title "Haru-haru for iOS" --target "$GITHUB_SHA" \
+              --notes "Latest iOS build. Open this page on your iPhone, download HaruHaru.ipa, and open it with SideStore."
+          gh release upload ios-latest ios/HaruHaru.ipa --clobber
